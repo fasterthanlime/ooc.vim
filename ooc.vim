@@ -46,7 +46,16 @@ syn keyword oocTodo TODO FIXME
 syn region oocComment start="/\*" end="\*/" contains=oocTodo,@Spell
 syn match oocLineComment "//.*" contains=oocTodo,@Spell
 
-"syn match oocFloat "\(\?<![\w\.]\)
+" Mostly stolen from syntax/c.vim
+syn match oocNumbers display transparent "\<\d\|\.\d" contains=oocNumber,oocFloat,oocOctal
+syn match oocNumber display contained "\d\+\(u\=l\{0,2}\|ll\=u\)\>"
+syn match oocNumber display contained "0x\x\+\(u\=l\{0,2}\|ll\=u\)\>"
+syn match oocOctal display contained "0\o\+\(u\=l\{0,2}\|ll\=u\)\>" contains=cOctalZero
+syn match oocOctalZero display contained "\<0"
+syn match oocFloat display contained "\d\+f"
+syn match oocFloat display contained "\d\+\.\d*\(e[-+]\=\d\+\)\=[fl]\="
+syn match oocFloat display contained "\.\d\+\(e[-+]\=\d\+\)\=[fl]\=\>"
+syn match oocFloat display contained "\d\+e[-+]\=\d\+[fl]\=\>"
 
 """
 
@@ -68,5 +77,9 @@ hi def link oocCharacter Character
 hi def link oocComment Comment
 hi def link oocLineComment Comment
 hi def link oocTodo Todo
+hi def link oocNumber Number
+hi def link oocOctal Number
+hi def link oocOctalZero PreProc
+hi def link oocFloat Float
 
 let b:current_syntax = "ooc"
