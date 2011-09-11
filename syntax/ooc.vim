@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language: ooc
 " Maintainer: Curtis McEnroe
-" Latest Revision: 11 September 2011
+" Version: 0.9.2-1
 
 if exists("b:current_syntax")
   finish
