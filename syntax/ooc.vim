@@ -13,7 +13,7 @@ syn keyword oocPrimitive Int Int8 Int16 Int32 Int64 Int80 Int128
 syn keyword oocPrimitive UInt UInt8 UInt16 UInt32 UInt64 UInt80 UInt 128
 syn keyword oocPrimitive Octet Short UShort Long ULong LLong ULLong
 syn keyword oocPrimitive Float Double LDouble Float32 Float64 Float128
-syn keyword oocPrimitive Char UChar SChar WChar String
+syn keyword oocPrimitive Char UChar SChar WChar String CString
 syn keyword oocPrimitive Void Pointer Bool SizeT This Class Func
 
 syn keyword oocDeclaration class cover extends from func implement interface operator extend
