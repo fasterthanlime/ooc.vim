@@ -4,7 +4,7 @@ ooc highlighting for VIM
 
 ## Install
 
- 1. Put these files in your `~/.vim`
+ 1. Put these files in your `~/.vim/`
  2. Open a `.ooc` file
  2. ????
  3. PROFIT!!!
