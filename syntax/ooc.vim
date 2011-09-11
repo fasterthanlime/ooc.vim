@@ -22,7 +22,7 @@ syn keyword oocStorageClass abstract static final extern const proto unmangled
 
 syn keyword oocScopeDecl private protected public internal
 
-syn keyword oocMemory new this
+syn keyword oocMemory new this as super
 
 syn keyword oocStatement break return continue
 syn keyword oocLabel case
