@@ -54,6 +54,8 @@ syn match oocFloat display contained "\d\+\.\d*\(e[-+]\=\d\+\)\=[fl]\="
 syn match oocFloat display contained "\.\d\+\(e[-+]\=\d\+\)\=[fl]\=\>"
 syn match oocFloat display contained "\d\+e[-+]\=\d\+[fl]\=\>"
 
+syn match oocSuffix "\~\w\+"
+
 """
 
 hi def link oocStatement Statement
@@ -78,5 +80,6 @@ hi def link oocNumber Number
 hi def link oocOctal Number
 hi def link oocOctalZero PreProc
 hi def link oocFloat Float
+hi def link oocSuffix Identifier
 
 let b:current_syntax = "ooc"
