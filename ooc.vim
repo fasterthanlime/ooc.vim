@@ -7,9 +7,6 @@ if exists("b:current_syntax")
   finish
 endif
 
-"""""""
-"""""""""
-
 syn keyword oocExternal import include use
 
 syn keyword oocPrimitive Int Int8 Int16 Int32 Int64 Int80 Int128
@@ -68,10 +65,10 @@ hi def link oocBoolean Boolean
 hi def link oocConstant Constant
 hi def link oocExternal Include
 hi def link oocPrimitive Type
-hi def link oocDeclaration StorageClass
+hi def link oocDeclaration Structure
 hi def link oocStorageClass StorageClass
 hi def link oocMemory Operator
-hi def link oocEscapedChar Special
+hi def link oocEscapedChar SpecialChar
 hi def link oocString String
 hi def link oocCharacter Character
 hi def link oocComment Comment
