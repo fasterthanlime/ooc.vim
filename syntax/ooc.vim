@@ -16,7 +16,7 @@ syn keyword oocPrimitive Float Double LDouble Float32 Float64 Float128
 syn keyword oocPrimitive Char UChar SChar WChar String CString
 syn keyword oocPrimitive Void Pointer Bool SizeT This Class Func
 
-syn keyword oocDeclaration class cover extends from func implement interface operator extend
+syn keyword oocDeclaration class cover extends from func implement interface operator extend enum
 
 syn keyword oocStorageClass abstract static final extern const proto unmangled
 
