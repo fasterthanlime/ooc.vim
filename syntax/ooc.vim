@@ -18,7 +18,7 @@ syn keyword oocPrimitive Void Pointer Bool SizeT This Class Func
 
 syn keyword oocDeclaration class cover extends from func implement interface operator extend enum
 
-syn keyword oocStorageClass abstract static final extern const proto unmangled
+syn keyword oocStorageClass abstract static final extern const proto unmangled inline
 
 syn keyword oocScopeDecl private protected public internal
 
