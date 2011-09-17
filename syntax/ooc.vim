@@ -84,5 +84,6 @@ hi def link oocOctalZero PreProc
 hi def link oocFloat Float
 hi def link oocSuffix Identifier
 hi def link oocPreproc Preproc
+hi def link oocScopeDecl StorageClass
 
 let b:current_syntax = "ooc"
