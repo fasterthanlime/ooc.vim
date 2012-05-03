@@ -6,5 +6,4 @@ ooc highlighting for VIM
 
  1. Put these files in your `~/.vim/`
  2. Open a `.ooc` file
- 2. ????
- 3. PROFIT!!!
+ 3. Have yourself a sandwich
