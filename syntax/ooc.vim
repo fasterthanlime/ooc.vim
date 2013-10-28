@@ -16,9 +16,9 @@ syn keyword oocPrimitive UInt UInt8 UInt16 UInt32 UInt64 UInt80 UInt 128
 syn keyword oocPrimitive Octet Short UShort Long ULong LLong ULLong
 syn keyword oocPrimitive Float Double LDouble Float32 Float64 Float128
 syn keyword oocPrimitive Char UChar SChar WChar String CString
-syn keyword oocPrimitive Void Pointer Bool SizeT This Class Func
+syn keyword oocPrimitive Void Pointer Bool SizeT This Class Object Func
 
-syn keyword oocDeclaration class cover extends from func implement interface operator extend enum
+syn keyword oocDeclaration class cover extends from func implements interface operator extend enum get set
 
 syn keyword oocStorageClass abstract static final extern const proto unmangled inline
 
@@ -29,8 +29,8 @@ syn keyword oocMemory new this as super
 syn keyword oocStatement break return continue
 syn keyword oocLabel case
 syn keyword oocConditional if else match
-syn keyword oocRepeat while for do
-syn keyword oocExceptions try catch finally
+syn keyword oocRepeat while for
+syn keyword oocExceptions try catch
 
 syn keyword oocBoolean true false
 syn keyword oocConstant null
@@ -97,5 +97,6 @@ hi def link oocOctalZero PreProc
 hi def link oocFloat Float
 hi def link oocSuffix Identifier
 hi def link oocPreproc Preproc
+hi def link oocScopeDecl StorageClass
 
 let b:current_syntax = "ooc"
