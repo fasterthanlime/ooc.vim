@@ -1,11 +1,13 @@
 " Vim syntax file
 " Language: ooc
 " Maintainer: Curtis McEnroe
-" Version: 0.9.2-1
+" Version: 0.9.8
 
 if exists("b:current_syntax")
   finish
 endif
+
+syn cluster oocNotTop contains=@oocDeclaration
 
 syn keyword oocExternal import include use
 
@@ -33,8 +35,19 @@ syn keyword oocExceptions try catch finally
 syn keyword oocBoolean true false
 syn keyword oocConstant null
 
+" Mostly stolen from syntax/ruby.vim
+syn region oocInterpolation	      matchgroup=oocInterpolationDelimiter start="#{" end="}" contained contains=ALLBUT,@oocNotTop
+syn match  oocInterpolation	      "#\%(\$\|@@\=\)\w\+"    display contained contains=oocInterpolationDelimiter,oocInstanceVariable,oocClassVariable,oocGlobalVariable,oocPredefinedVariable
+syn match  oocInterpolationDelimiter "#\ze\%(\$\|@@\=\)\w\+" display contained
+syn match  oocInterpolation	      "#\$\%(-\w\|\W\)"       display contained contains=oocInterpolationDelimiter,oocPredefinedVariable,oocInvalidVariable
+syn match  oocInterpolationDelimiter "#\ze\$\%(-\w\|\W\)"    display contained
+syn region oocNoInterpolation	      start="\\#{" end="}"            contained
+syn match  oocNoInterpolation	      "\\#{"		      display contained
+syn match  oocNoInterpolation	      "\\#\%(\$\|@@\=\)\w\+"  display contained
+syn match  oocNoInterpolation	      "\\#\$\W"		      display contained
+
 syn match oocEscapedChar display contained "\\\([\\\"\'nrbtf]\|[0-9]\{1,3}\|u[0-9]\{1,4}\)"
-syn region oocString start=+L\="+ skip=+\\\\\|\\"+ end=+"+ contains=oocEscapedChar,@Spell
+syn region oocString start=+L\="+ skip=+\\\\\|\\"+ end=+"+ contains=oocEscapedChar,oocInterpolation,oocNoInterpolation,@Spell
 
 syn match oocCharacter "L\='[^\\]'"
 syn match oocCharacter "L'[^']*'" contains=oocEscapedChar
