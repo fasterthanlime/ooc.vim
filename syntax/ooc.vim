@@ -86,6 +86,8 @@ hi def link oocDeclaration Structure
 hi def link oocStorageClass StorageClass
 hi def link oocMemory Operator
 hi def link oocEscapedChar SpecialChar
+hi def link oocInterpolationDelimiter	Delimiter
+hi def link oocNoInterpolation		oocString
 hi def link oocString String
 hi def link oocCharacter Character
 hi def link oocComment Comment
