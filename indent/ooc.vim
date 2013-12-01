@@ -22,6 +22,7 @@ endif
 function! CountParens(line)
   " if in a comment line, ignore parens
   if a:line =~ '^\s*//'
+      \ || a:line =~ '^\s*\*'
       \ || a:line =~ '^\s*/\*'
       \ || a:line =~ '^\s*\*/'
     return 0
@@ -30,6 +31,18 @@ function! CountParens(line)
   let open = substitute(line, '[^(]', '', 'g')
   let close = substitute(line, '[^)]', '', 'g')
   return strlen(open) - strlen(close)
+endfunction
+
+function! MultiCommentStart(startline)
+  let lnum = a:startline
+  while lnum > 1
+    if getline(lnum) =~ '^\s*/\*'
+      break
+    endif
+    let lnum = lnum - 1
+  end
+
+  return lnum
 endfunction
 
 function! GetOocIndent()
@@ -80,6 +93,16 @@ function! GetOocIndent()
   let thisline = getline(v:lnum)
   if thisline =~ '^\s*[})]'
     let ind = ind - &shiftwidth
+  endif
+
+  if prevline =~ '^\s*\*/'
+    " After a multi-line comment, dedent
+    let ind = ind - 1
+  elseif thisline =~ '^\s*\*'
+    " In a multi-line comment, do funky stuff
+    if prevline =~ '^\s*/\*'
+      let ind = ind + 1
+    endif
   endif
 
   return ind
