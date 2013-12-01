@@ -9,7 +9,7 @@ describe 'indent/ooc.vim' do
         init: func {
         a: Int
         }
-        } 
+        }
       EOF
 
       vim.edit 'test.ooc'
