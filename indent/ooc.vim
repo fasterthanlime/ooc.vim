@@ -20,6 +20,12 @@ if exists("*GetOocIndent")
 endif
 
 function! CountParens(line)
+  " if in a comment line, ignore parens
+  if a:line =~ '^\s*//'
+      \ || a:line =~ '^\s*/\*'
+      \ || a:line =~ '^\s*\*/'
+    return 0
+  endif
   let line = substitute(a:line, '"\(.\|\\"\)*"', '', 'g')
   let open = substitute(line, '[^(]', '', 'g')
   let close = substitute(line, '[^)]', '', 'g')
