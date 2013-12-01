@@ -12,23 +12,21 @@ It provides:
   * A syntastic plug-in for use with [sam][sam]
   * `:make` command support
 
-## Vundle install
+## Install instructions
 
-[Vundle][vundle] is a very neat tool to manage your vim plugins.
+[Vundle][vundle] is a very neat tool to manage your vim plugins, and
+is the recommended way to get ooc.vim and keep it up-to-date.
 
 Add this to your `~/.vimrc`:
 
 ```viml
-Bundle "nddrylliog/ooc.vim"
+Bundle 'nddrylliog/ooc.vim'
 ```
 
 Then restart vim, run `:BundleInstall`, and you're set!
 
-## Manual install
-
- 1. Put these files in your `~/.vim/`
- 2. Open a `.ooc` file
- 3. Have yourself a sandwich
+Installing ooc.vim with pathogen should be as easy as cloning it in
+`~/.vim/bundle`
 
 ## Syntastic
 
