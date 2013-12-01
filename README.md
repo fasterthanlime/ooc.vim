@@ -10,7 +10,7 @@ It provides:
   * Syntax highlighting
   * Indentation support
   * A syntastic plug-in for use with [sam][sam]
-  * `:make` command support
+  * `:make` command support (launches `rock -v`)
 
 ## Install instructions
 
