@@ -143,7 +143,7 @@ function! GetOocIndent()
   endif
 
   " Align case contents correctly
-  if prevline =~ '^\s*case.*[=>]\s*$'
+  if prevline =~ '^\s*case.*[=>]\(\s\|[{]\)*$'
     let ms = MatchStart(v:lnum)
     let ind = indent(ms) + (&shiftwidth * 2)
   endif
@@ -168,17 +168,17 @@ function! GetOocIndent()
     let ind = ind - &shiftwidth
 
     if thisline =~ '^\s*[}]'
-      " deindent twice at the end of match blocks
+      " align match end with match begin
       let ms = MatchStart(v:lnum)
       let bs = BlockStart(v:lnum)
       if ms == bs
-        let ind = ind - &shiftwidth
+        let ind = indent(ms)
       endif
     endif
   endif
   
   " Align cases correctly
-  if thisline =~ '^\s*case.*[=>]\s*$'
+  if thisline =~ '^\s*case.*[=>]\(\s\|[{]\)*$'
     let ms = MatchStart(v:lnum)
     let ind = indent(ms) + &shiftwidth
   endif

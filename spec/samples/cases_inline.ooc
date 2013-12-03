@@ -1,0 +1,8 @@
+AddressOf: class {
+replace: func {
+match oldie {
+case expr => expr = kiddo; true 
+case      => false
+}    
+}    
+}
