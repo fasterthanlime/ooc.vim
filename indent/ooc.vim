@@ -150,7 +150,6 @@ function! GetOocIndent()
 
   " If parenthesis are unbalanced, indent or dedent
   let c = CountParens(prevline)
-  echom "lnum = " . lnum . ", c = " . c
   if c > 0
     let ind = ind + &shiftwidth
   elseif c < 0
@@ -164,7 +163,6 @@ function! GetOocIndent()
   " Subtract a 'shiftwidth' on '}' or ')'
   let thisline = GetStrippedLine(v:lnum)
   if thisline =~ '^\s*[})]'
-    echom "v:lnum = " . v:lnum . ", stripped = " . thisline
     let ind = ind - &shiftwidth
 
     if thisline =~ '^\s*[}]'
