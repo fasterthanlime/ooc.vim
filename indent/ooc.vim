@@ -85,8 +85,8 @@ function! GetStrippedLine(lnum)
   return line
 endfunction
 
-function! CountParens(lnum)
-  let line = GetStrippedLine(a:lnum)
+function! CountParens(line)
+  let line = a:line
   let open = substitute(line, '[^(]', '', 'g')
   let close = substitute(line, '[^)]', '', 'g')
   return strlen(open) - strlen(close)
@@ -149,17 +149,22 @@ function! GetOocIndent()
   endif
 
   " If parenthesis are unbalanced, indent or dedent
-  let c = CountParens(lnum)
+  let c = CountParens(prevline)
+  echom "lnum = " . lnum . ", c = " . c
   if c > 0
     let ind = ind + &shiftwidth
   elseif c < 0
-    let ind = ind - &shiftwidth
+    if prevline =~ '^\s*[)]'
+      " will be caught later
+    else
+      let ind = ind - &shiftwidth
+    endif
   endif
 
   " Subtract a 'shiftwidth' on '}' or ')'
   let thisline = GetStrippedLine(v:lnum)
   if thisline =~ '^\s*[})]'
-    echom "lnum = " . v:lnum . ", stripped = " . thisline
+    echom "v:lnum = " . v:lnum . ", stripped = " . thisline
     let ind = ind - &shiftwidth
 
     if thisline =~ '^\s*[}]'
@@ -186,16 +191,6 @@ function! GetOocIndent()
     " After a multi-line comment, unindent by 1
     let ind = ind - 1
   endif
-
-  " if prevline =~ '^\s*\*/'
-  "   " After a multi-line comment, dedent
-  "   let ind = ind - 1
-  " elseif thisline =~ '^\s*\*'
-  "   " In a multi-line comment, do funky stuff
-  "   if prevline =~ '^\s*/\*'
-  "     let ind = ind + 1
-  "   endif
-  " endif
 
   return ind
 endfunction

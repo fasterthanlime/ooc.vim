@@ -16,10 +16,16 @@ Vimrunner::RSpec.configure do |config|
   end
 end
 
-# indent
+# indent using ooc.vim
 def do_indent(vim)
   vim.set('ft', 'ooc')
   vim.normal "ggvG=" # go to beginning, indent all
   vim.write
+end
+
+# return all .ooc files in spec/samples in an array
+def samples
+  home = File.expand_path('../..', __FILE__)
+  Dir.glob("#{home}/spec/samples/*.ooc")
 end
 

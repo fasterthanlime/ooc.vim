@@ -1,27 +1,13 @@
 
 require 'spec_helper'
 
-describe 'indent/ooc.vim' do
-  describe 'Basic block behavior' do
-    specify 'blocks such as classes, funcs, should be indented correctly' do
-      write_file('test.ooc', <<-EOF)
-        Dog: class {
-        init: func {
-        a: Int
-        }
-        }
-      EOF
-
+samples.each do |sample|
+  describe sample do
+    specify 'indentation should correspond to reference' do
+      write_file('test.ooc', IO.read(sample).rstrip)
       vim.edit 'test.ooc'
       do_indent(vim)
-
-      IO.read('test.ooc').rstrip.should eq normalize_string_indent(<<-EOF)
-        Dog: class {
-            init: func {
-                a: Int
-            }
-        }
-      EOF
+      IO.read('test.ooc').rstrip.should eq IO.read("#{sample}.ref").rstrip
     end
   end
 end
