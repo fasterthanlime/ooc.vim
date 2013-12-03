@@ -19,28 +19,106 @@ if exists("*GetOocIndent")
   finish
 endif
 
-function! CountParens(line)
-  " if in a comment line, ignore parens
-  if a:line =~ '^\s*//'
-      \ || a:line =~ '^\s*\*'
-      \ || a:line =~ '^\s*/\*'
-      \ || a:line =~ '^\s*\*/'
-    return 0
+" determine comment state
+" return values are:
+" 0 - not in a comment
+" 1 - in single-line comment
+" 2 - in multi-line comment start
+" 3 - in multi-line comment end
+" 4 - in multi-line comment middle
+function! CommentState(lnum)
+  let lnum = a:lnum
+  let line = getline(lnum)
+
+  if line =~ '^\s*//'
+    " single-line comment
+    return 1
+  elseif line =~ '/\*.*\*/'
+    " single-line comment
+    return 1
+  elseif line =~ '^\s*/\*'
+    " multiline-comment start
+    return 2
+  elseif line =~ '\*/\s*$'
+    " multiline-comment end
+    return 3
   endif
-  let line = substitute(a:line, '"\(.\|\\"\)*"', '', 'g')
+
+  let original = line
+  let lnum = lnum - 1
+
+  while lnum > 1
+    let line = getline(lnum)
+    if line =~ '\*/\s*$'
+      " found a closing tag before we found an opening tag,
+      " hence, we're not in a comment.
+      return 0
+    elseif line =~ '^\s*/\*'
+      " found an opening tag, that's a good sign
+      return 4
+    endif
+      
+    let lnum = lnum - 1
+  endwhile
+
+  return 0
+endfunction
+
+function! GetStrippedLine(lnum)
+  " if in a comment line, empty line!
+  let cstate = CommentState(a:lnum)
+  if cstate > 0
+    return ""
+  endif
+
+  let line = getline(a:lnum)
+
+  " get rid of strings
+  let line = substitute(line, '"\(.\|\\"\)*"', '', 'g')
+
+  " get rid of single-line comments
+  let line = substitute(line, '//.*$', '', 'g')
+
+  " get rid of multi-line comments
+  let line = substitute(line, '/\*.*\*/', '', 'g')
+
+  return line
+endfunction
+
+function! CountParens(lnum)
+  let line = GetStrippedLine(a:lnum)
   let open = substitute(line, '[^(]', '', 'g')
   let close = substitute(line, '[^)]', '', 'g')
   return strlen(open) - strlen(close)
 endfunction
 
-function! MultiCommentStart(startline)
+function! BlockStart(startline)
+  let bracecount = 1
+  let lnum = a:startline
+
+  while lnum > 1 && bracecount > 0
+    let lnum = lnum - 1
+
+    let line = getline(lnum)
+
+    if line =~ '}\s*$'
+      let bracecount = bracecount + 1
+    elseif line =~ '{\s*$'
+      let bracecount = bracecount - 1
+    endif
+  endwhile
+
+  return lnum
+endfunction
+
+function! MatchStart(startline)
   let lnum = a:startline
   while lnum > 1
-    if getline(lnum) =~ '^\s*/\*'
+    if getline(lnum) =~ '^\s*match.*[{]\s*$'
       break
     endif
     let lnum = lnum - 1
-  end
+  endwhile
 
   return lnum
 endfunction
@@ -55,55 +133,69 @@ function! GetOocIndent()
   endif
 
   let ind = indent(lnum)
-  let prevline = getline(lnum)
+  let prevline = GetStrippedLine(lnum)
 
   " Add a 'shiftwidth' after lines that start a block
   " If if, for or while end with ), this is a one-line block
   " If val, var, def end with =, this is a one-line block
-  if prevline =~ '^\s*\<\(\(else\s\+\)\?if\|for\|while\)\>.*[)]\s*$'
-        \ || prevline =~ '^\s*\<\(\(va[lr]\|def\)\>.*[=]\s*$'
-        \ || prevline =~ '^\s*\<else\>\s*$'
-        \ || prevline =~ '{\s*$'
+  if prevline =~ '{\s*$'
     let ind = ind + &shiftwidth
   endif
 
+  " Align case contents correctly
+  if prevline =~ '^\s*case.*[=>]\s*$'
+    let ms = MatchStart(v:lnum)
+    let ind = indent(ms) + (&shiftwidth * 2)
+  endif
+
   " If parenthesis are unbalanced, indent or dedent
-  let c = CountParens(prevline)
-  echo c
+  let c = CountParens(lnum)
   if c > 0
     let ind = ind + &shiftwidth
   elseif c < 0
     let ind = ind - &shiftwidth
   endif
-  
-  " Dedent after if, for, while and val, var, def without block
-  let pprevline = getline(prevnonblank(lnum - 1))
-  if pprevline =~ '^\s*\<\(\(else\s\+\)\?if\|for\|while\)\>.*[)]\s*$'
-        \ || pprevline =~ '^\s*\<\(\va[lr]\|def\)\>.*[=]\s*$'
-        \ || pprevline =~ '^\s*\<else\>\s*$'
-    let ind = ind - &shiftwidth
-  endif
 
-  " Align 'for' clauses nicely
-  if prevline =~ '^\s*\<for\> (.*;\s*$'
-    let ind = ind - &shiftwidth + 5
-  endif
-
-  " Subtract a 'shiftwidth' on '}'
-  let thisline = getline(v:lnum)
+  " Subtract a 'shiftwidth' on '}' or ')'
+  let thisline = GetStrippedLine(v:lnum)
   if thisline =~ '^\s*[})]'
+    echom "lnum = " . v:lnum . ", stripped = " . thisline
     let ind = ind - &shiftwidth
-  endif
 
-  if prevline =~ '^\s*\*/'
-    " After a multi-line comment, dedent
-    let ind = ind - 1
-  elseif thisline =~ '^\s*\*'
-    " In a multi-line comment, do funky stuff
-    if prevline =~ '^\s*/\*'
-      let ind = ind + 1
+    if thisline =~ '^\s*[}]'
+      " deindent twice at the end of match blocks
+      let ms = MatchStart(v:lnum)
+      let bs = BlockStart(v:lnum)
+      if ms == bs
+        let ind = ind - &shiftwidth
+      endif
     endif
   endif
+  
+  " Align cases correctly
+  if thisline =~ '^\s*case.*[=>]\s*$'
+    let ms = MatchStart(v:lnum)
+    let ind = indent(ms) + &shiftwidth
+  endif
+
+  let cs = CommentState(lnum)
+  if cs == 2
+    " Within a multi-line comment, indent by 1
+    let ind = ind + 1
+  elseif cs == 3
+    " After a multi-line comment, unindent by 1
+    let ind = ind - 1
+  endif
+
+  " if prevline =~ '^\s*\*/'
+  "   " After a multi-line comment, dedent
+  "   let ind = ind - 1
+  " elseif thisline =~ '^\s*\*'
+  "   " In a multi-line comment, do funky stuff
+  "   if prevline =~ '^\s*/\*'
+  "     let ind = ind + 1
+  "   endif
+  " endif
 
   return ind
 endfunction
