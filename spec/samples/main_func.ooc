@@ -1,3 +1,3 @@
 main: func (a: Int) {
-    "Hello" println()
+"Hello" println()
 }
