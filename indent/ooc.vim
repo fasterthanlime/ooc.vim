@@ -94,7 +94,7 @@ function! GetStrippedLine(lnum)
   let line = getline(a:lnum)
 
   " get rid of strings
-  let line = substitute(line, '"\(.\|\\"\)*"', '', 'g')
+  let line = substitute(line, '"\([^\"]\|\\\"\)*"', '', 'g')
 
   " get rid of single-line comments
   let line = substitute(line, '//.*$', '', 'g')
