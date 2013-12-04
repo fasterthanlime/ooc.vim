@@ -46,10 +46,10 @@ syn match  oocNoInterpolation	      "\\#{"		      display contained
 syn match  oocNoInterpolation	      "\\#\%(\$\|@@\=\)\w\+"  display contained
 syn match  oocNoInterpolation	      "\\#\$\W"		      display contained
 
-syn match oocEscapedChar display contained "\\\([\\\"\'nrbtf]\|[0-9]\{1,3}\|u[0-9]\{1,4}\)"
+syn match oocEscapedChar display contained "\\\([\\\"\'anrbtfv]\|\o\{1,3}\|x\x\{1,2}\|u\x\{1,4}\)"
 syn region oocString start=+L\="+ skip=+\\\\\|\\"+ end=+"+ contains=oocEscapedChar,oocInterpolation,oocNoInterpolation,@Spell
 
-syn match oocCharacter "L\='[^\\]'"
+syn match oocCharacter "L\='\(\\['anrbtfv\\]\|\\\o\{1,3}\|\\x\x\{1,2}\|\\u\x\{1,4}\|[^\\]\)'" contains=oocEscapedChar
 syn match oocCharacter "L'[^']*'" contains=oocEscapedChar
 
 syn keyword oocTodo TODO FIXME
