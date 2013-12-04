@@ -130,6 +130,10 @@ endfunction
 
 function! IsSingleLine(line)
   let line = substitute(a:line, '\s*$', '', 'g')
+  if line =~ '^\s*else\s*'
+    return 1
+  endif
+
   let n = strlen(line) - 1
   let numparens = 0
 
@@ -151,7 +155,7 @@ function! IsSingleLine(line)
 
   if numparens == 0
     let rest = strpart(line, 0, n)
-    if rest =~ '^\s*\w*\s*$'
+    if rest =~ '^\s*\(if\|else\|for\|while\)\s*$'
       return 1
     endif
   endif
@@ -179,7 +183,7 @@ function! GetOocIndent()
   endif
 
   " Add a 'shiftwidth' after braceless if/else/for/while
-  if prevline =~ '\(if\|else\|for\|while\).*\()\)\=$'
+  if prevline =~ '^\s*\(if\|else\|for\|while\).*\()\)\=$'
     if IsSingleLine(prevline) == 1
       let ind = ind + &shiftwidth
     endif
@@ -188,7 +192,7 @@ function! GetOocIndent()
   " Then don't forget to remove it...
   let llnum = prevnonblank(lnum - 1)
   let ppline = getline(llnum)
-  if ppline =~ '\(if\|else\|for\|while\).*\()\)\=$'
+  if ppline =~ '^\s*\(if\|else\|for\|while\).*\()\)\=$'
     if IsSingleLine(ppline) == 1
       let ind = indent(llnum)
     endif
@@ -232,7 +236,7 @@ function! GetOocIndent()
 
   " Subtract a 'shiftwidth' on '}' or ')'
   let thisline = GetStrippedLine(v:lnum)
-  if thisline =~ '^\s*[})]'
+  if thisline =~ '^\s*[})]\(\s\|[})]\)*'
     let ind = ind - &shiftwidth
 
     if thisline =~ '^\s*[}]'
