@@ -115,7 +115,7 @@ function! BlockStart(startline)
   let bracecount = 1
   let lnum = a:startline
 
-  while lnum > 0 && bracecount > 0
+  while lnum > 1 && bracecount > 0
     let lnum = lnum - 1
     let line = GetStrippedLine(lnum)
 
