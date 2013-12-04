@@ -23,6 +23,27 @@ if exists("*GetOocIndent")
   finish
 endif
 
+" find start of import, returns -1 if we're not in a multi-line import
+function! ImportStart(lnum)
+  let lnum = a:lnum
+
+  while lnum > 1
+    let line = getline(lnum)
+    if line =~ ',\s*$'
+      if line =~ '^\s*import\s'
+        break
+      endif
+    else
+      " not a line ending in a comma, we can't be in a multi-line import
+      return 0
+    endif
+
+    let lnum = lnum - 1
+  endwhile
+
+  return lnum
+endfunction
+
 " determine comment state
 function! CommentState(lnum)
   let line = getline(a:lnum)
@@ -137,6 +158,25 @@ function! GetOocIndent()
   if prevline =~ '^\s*case.*[=>]\s*$'
     let bnum = BlockStart(v:lnum)
     let ind = indent(bnum) + (&shiftwidth * 2)
+  endif
+
+  " Align multi-line imports correctly
+  if prevline =~ ',\s*$'
+    let inum = ImportStart(lnum)
+    echom "(if) v:lnum = " . v:lnum . ", inum = " . inum
+    if inum == 0
+      " not in an import
+    else
+      let ind = indent(inum) + &shiftwidth
+    end
+  elseif lnum > 1 && getline(lnum - 1) =~ ',\s*$'
+    let inum = ImportStart(lnum - 1)
+    echom "(else) v:lnum = " . v:lnum . ", inum = " . inum
+    if inum == 0
+      " okay
+    else
+      let ind = indent(inum)
+    endif
   endif
 
   " If parenthesis are unbalanced, indent or dedent
