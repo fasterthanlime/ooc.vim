@@ -22,7 +22,7 @@ endif
 function! ImportStart(lnum)
   let lnum = a:lnum
 
-  while lnum > 1
+  while lnum > 0
     let line = getline(lnum)
     if line =~ ',\s*$'
       if line =~ '^\s*import\s'
@@ -67,7 +67,7 @@ function! CommentState(lnum)
   let original = line
   let lnum = a:lnum - 1
 
-  while lnum > 1
+  while lnum > 0
     let line = getline(lnum)
     if line =~ '\*/\s*$'
       " found a closing tag before we found an opening tag,
@@ -115,7 +115,7 @@ function! BlockStart(startline)
   let bracecount = 1
   let lnum = a:startline
 
-  while lnum > 1 && bracecount > 0
+  while lnum > 0 && bracecount > 0
     let lnum = lnum - 1
     let line = GetStrippedLine(lnum)
 
@@ -178,7 +178,7 @@ function! GetOocIndent()
   " Add a 'shiftwidth' after lines that start a block
   " If if, for or while end with ), this is a one-line block
   " If val, var, def end with =, this is a one-line block
-  if prevline =~ '{\s*$'
+  if prevline =~ '[{\[]\s*$'
     let ind = ind + &shiftwidth
   endif
 
@@ -210,6 +210,8 @@ function! GetOocIndent()
     if inum == 0
       " not in an import
     else
+      echom "prevline = '" . prevline . "' inum = " . inum
+
       " 'import' + space = 7 spaces
       let ind = indent(inum) + 7
     end
@@ -236,7 +238,7 @@ function! GetOocIndent()
 
   " Subtract a 'shiftwidth' on '}' or ')'
   let thisline = GetStrippedLine(v:lnum)
-  if thisline =~ '^\s*[})]\(\s\|[})]\)*'
+  if thisline =~ '^\s*[\]})]\(\s\|[\]})]\)*'
     let ind = ind - &shiftwidth
 
     if thisline =~ '^\s*[}]'
