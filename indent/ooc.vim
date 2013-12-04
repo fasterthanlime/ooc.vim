@@ -130,7 +130,7 @@ endfunction
 
 function! IsSingleLine(line)
   let line = substitute(a:line, '\s*$', '', 'g')
-  if line =~ '^\s*else\s*'
+  if line =~ '^\s*else\s*$'
     return 1
   endif
 
