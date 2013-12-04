@@ -104,7 +104,11 @@ function! GetStrippedLine(lnum)
   return line
 endfunction
 
-function! CountParens(line)
+function! CountParens(line, ppline)
+  if a:line =~ '\\$' && a:ppline =~ '\\$'
+    return 0
+  endif
+
   let open = substitute(a:line, '[^(]', '', 'g')
   let close = substitute(a:line, '[^)]', '', 'g')
   return strlen(open) - strlen(close)
@@ -174,6 +178,9 @@ function! GetOocIndent()
   let ind = indent(lnum)
   let prevline = GetStrippedLine(lnum)
 
+  let llnum = prevnonblank(lnum - 1)
+  let ppline = getline(llnum)
+
   " Add a 'shiftwidth' after lines that start a block
   " If if, for or while end with ), this is a one-line block
   " If val, var, def end with =, this is a one-line block
@@ -189,8 +196,6 @@ function! GetOocIndent()
   endif
 
   " Then don't forget to remove it...
-  let llnum = prevnonblank(lnum - 1)
-  let ppline = getline(llnum)
   if ppline =~ '^\s*\(if\|else\|for\|while\).*\()\)\=$'
     if IsSingleLine(ppline) == 1
       let ind = indent(llnum)
@@ -222,7 +227,7 @@ function! GetOocIndent()
   endif
 
   " If parenthesis are unbalanced, indent or dedent
-  let c = CountParens(prevline)
+  let c = CountParens(prevline, ppline)
   if c > 0
     let ind = ind + &shiftwidth
   elseif c < 0
