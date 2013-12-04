@@ -27,8 +27,14 @@ endif
 " 3 - in multi-line comment end
 " 4 - in multi-line comment middle
 function! CommentState(lnum)
-  let lnum = a:lnum
-  let line = getline(lnum)
+  let line = getline(a:lnum)
+
+  let synname = synIDattr(synID(a:lnum, strlen(line) - 1, 0), "name")
+  if synname == "oocComment"
+    " continue
+  else
+    return 0
+  endif
 
   if line =~ '^\s*//'
     " single-line comment
@@ -45,7 +51,7 @@ function! CommentState(lnum)
   endif
 
   let original = line
-  let lnum = lnum - 1
+  let lnum = a:lnum - 1
 
   while lnum > 1
     let line = getline(lnum)
