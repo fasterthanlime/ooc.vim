@@ -131,12 +131,10 @@ endfunction
 function! IsSingleLine(line)
   let line = substitute(a:line, '\s*$', '', 'g')
   let n = strlen(line) - 1
-  echom "in issingleline, line = " . line . " n = " . n
   let numparens = 0
 
   while n > 0
     let c = strpart(line, n, 1)
-    echom " n = " . n . ", c = " . c
 
     if c == '('
       let numparens = numparens - 1
