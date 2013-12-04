@@ -159,7 +159,8 @@ function! GetOocIndent()
     if inum == 0
       " not in an import
     else
-      let ind = indent(inum) + &shiftwidth
+      " 'import' + space = 7 spaces
+      let ind = indent(inum) + 7
     end
   elseif lnum > 1 && getline(lnum - 1) =~ ',\s*$'
     let inum = ImportStart(lnum - 1)
