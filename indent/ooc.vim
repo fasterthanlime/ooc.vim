@@ -9,13 +9,8 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
-setlocal nosmartindent
-setlocal noautoindent
-setlocal nocindent
-setlocal nolisp
-
 setlocal indentexpr=GetOocIndent()
-setlocal indentkeys=0{,0},0),:,!^F,o,O,e,*<Return>,=?>,=<?,=*/
+setlocal indentkeys=0{,0},0),:,!^F,o,O,e,<>>,<CR>
 
 setlocal autoindent shiftwidth=4 tabstop=4 softtabstop=4 expandtab
 
@@ -117,19 +112,19 @@ function! CountParens(line)
 endfunction
 
 function! BlockStart(startline)
+  echom "blockstart(" . a:startline . ")"
   let bracecount = 1
   let lnum = a:startline
 
   while lnum > 1 && bracecount > 0
     let lnum = lnum - 1
-
     let line = GetStrippedLine(lnum)
 
-    if line =~ '}\s*$'
-      let bracecount = bracecount + 1
-    elseif line =~ '{\s*$'
-      let bracecount = bracecount - 1
-    endif
+    let open = substitute(line, '[^{]', '', 'g')
+    let close = substitute(line, '[^}]', '', 'g')
+    let diff = strlen(close) - strlen(open)
+    echom "lnum = " . lnum . " diff = " . diff
+    let bracecount = bracecount + diff
   endwhile
 
   return lnum
@@ -198,8 +193,12 @@ function! GetOocIndent()
 
     if thisline =~ '^\s*[}]'
       " align match end with match begin
-      let mnum = searchpair('{', '', '}', 'bW')
-      let ind = indent(mnum)
+      " let mnum = searchpair('{', '', '}', 'bWr')
+      let bnum = BlockStart(v:lnum)
+      echom "subtract | v:lnum = " . v:lnum . " lnum = " . lnum . ", bnum = " . bnum . ", line = " . getline(bnum)
+      if getline(bnum) =~ '^\s*match.*[{]\s*$'
+        let ind = indent(bnum)
+      endif
     endif
   endif
   
