@@ -128,6 +128,39 @@ function! BlockStart(startline)
   return lnum
 endfunction
 
+function! IsSingleLine(line)
+  let line = substitute(a:line, '\s*$', '', 'g')
+  let n = strlen(line) - 1
+  echom "in issingleline, line = " . line . " n = " . n
+  let numparens = 0
+
+  while n > 0
+    let c = strpart(line, n, 1)
+    echom " n = " . n . ", c = " . c
+
+    if c == '('
+      let numparens = numparens - 1
+    elseif c == ')'
+      let numparens = numparens + 1
+    endif
+
+    if numparens < 1
+      break
+    endif
+    
+    let n = n - 1
+  endwhile 
+
+  if numparens == 0
+    let rest = strpart(line, 0, n)
+    if rest =~ '^\s*\w*\s*$'
+      return 1
+    endif
+  endif
+
+  return 0
+endfunction
+
 function! GetOocIndent()
   " Find a non-blank line above the current line.
   let lnum = prevnonblank(v:lnum - 1)
@@ -148,14 +181,19 @@ function! GetOocIndent()
   endif
 
   " Add a 'shiftwidth' after braceless if/else/for/while
-  if prevline =~ '\(if\|else\|for\|while\)[^{]*$'
-    let ind = ind + &shiftwidth
+  if prevline =~ '\(if\|else\|for\|while\).*\()\)\=$'
+    if IsSingleLine(prevline) == 1
+      let ind = ind + &shiftwidth
+    endif
   endif
 
   " Then don't forget to remove it...
   let llnum = prevnonblank(lnum - 1)
-  if getline(llnum) =~ '\(if\|else\|for\|while\)[^{]*$'
-    let ind = indent(llnum)
+  let ppline = getline(llnum)
+  if ppline =~ '\(if\|else\|for\|while\).*\()\)\=$'
+    if IsSingleLine(ppline) == 1
+      let ind = indent(llnum)
+    endif
   endif
 
   " Align case contents correctly
