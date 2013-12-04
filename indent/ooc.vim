@@ -1,8 +1,7 @@
 " Vim indent file
-" Inspired by scala.vim - https://github.com/jergason/scala.vim
 " Language   : ooc (http://ooc-lang.org/)
 " Maintainer : Amos Wenger
-" Last Change: 2013 Dec 01
+" Last Change: 2013 Dec 04
 
 if exists("b:did_indent")
   finish
@@ -178,7 +177,7 @@ function! GetOocIndent()
   " Add a 'shiftwidth' after lines that start a block
   " If if, for or while end with ), this is a one-line block
   " If val, var, def end with =, this is a one-line block
-  if prevline =~ '[{\[]\s*$'
+  if prevline =~ '[{[]\s*$'
     let ind = ind + &shiftwidth
   endif
 
@@ -210,8 +209,6 @@ function! GetOocIndent()
     if inum == 0
       " not in an import
     else
-      echom "prevline = '" . prevline . "' inum = " . inum
-
       " 'import' + space = 7 spaces
       let ind = indent(inum) + 7
     end
@@ -243,7 +240,6 @@ function! GetOocIndent()
 
     if thisline =~ '^\s*[}]'
       " align match end with match begin
-      " let mnum = searchpair('{', '', '}', 'bWr')
       let bnum = BlockStart(v:lnum)
       if getline(bnum) =~ '^\s*match.*[{]\s*$'
         let ind = indent(bnum)
