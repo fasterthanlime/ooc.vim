@@ -112,7 +112,6 @@ function! CountParens(line)
 endfunction
 
 function! BlockStart(startline)
-  echom "blockstart(" . a:startline . ")"
   let bracecount = 1
   let lnum = a:startline
 
@@ -123,7 +122,6 @@ function! BlockStart(startline)
     let open = substitute(line, '[^{]', '', 'g')
     let close = substitute(line, '[^}]', '', 'g')
     let diff = strlen(close) - strlen(open)
-    echom "lnum = " . lnum . " diff = " . diff
     let bracecount = bracecount + diff
   endwhile
 
@@ -158,7 +156,6 @@ function! GetOocIndent()
   " Align multi-line imports correctly
   if prevline =~ ',\s*$'
     let inum = ImportStart(lnum)
-    echom "(if) v:lnum = " . v:lnum . ", inum = " . inum
     if inum == 0
       " not in an import
     else
@@ -166,7 +163,6 @@ function! GetOocIndent()
     end
   elseif lnum > 1 && getline(lnum - 1) =~ ',\s*$'
     let inum = ImportStart(lnum - 1)
-    echom "(else) v:lnum = " . v:lnum . ", inum = " . inum
     if inum == 0
       " okay
     else
@@ -195,7 +191,6 @@ function! GetOocIndent()
       " align match end with match begin
       " let mnum = searchpair('{', '', '}', 'bWr')
       let bnum = BlockStart(v:lnum)
-      echom "subtract | v:lnum = " . v:lnum . " lnum = " . lnum . ", bnum = " . bnum . ", line = " . getline(bnum)
       if getline(bnum) =~ '^\s*match.*[{]\s*$'
         let ind = indent(bnum)
       endif
@@ -205,7 +200,6 @@ function! GetOocIndent()
   " Align cases correctly
   if thisline =~ '^\s*case.*[=>]\(\s\|[{]\)*$'
     let bnum = BlockStart(v:lnum)
-    echom "blockstart = " . bnum . ", line = " . getline(bnum)
     if getline(bnum) =~ '^\s*match.*[{]\s*$'
       let ind = indent(bnum) + &shiftwidth
     endif
