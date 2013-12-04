@@ -147,6 +147,17 @@ function! GetOocIndent()
     let ind = ind + &shiftwidth
   endif
 
+  " Add a 'shiftwidth' after braceless if/else/for/while
+  if prevline =~ '\(if\|else\|for\|while\)[^{]*$'
+    let ind = ind + &shiftwidth
+  endif
+
+  " Then don't forget to remove it...
+  let llnum = prevnonblank(lnum - 1)
+  if getline(llnum) =~ '\(if\|else\|for\|while\)[^{]*$'
+    let ind = indent(llnum)
+  endif
+
   " Align case contents correctly
   if prevline =~ '^\s*case.*[=>]\s*$'
     let bnum = BlockStart(v:lnum)
