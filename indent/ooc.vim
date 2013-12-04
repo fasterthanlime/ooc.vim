@@ -9,9 +9,13 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
-setlocal indentexpr=GetOocIndent()
+setlocal nosmartindent
+setlocal noautoindent
+setlocal nocindent
+setlocal nolisp
 
-setlocal indentkeys=0{,0},0),!^F,<>>,<CR>
+setlocal indentexpr=GetOocIndent()
+setlocal indentkeys=0{,0},0),:,!^F,o,O,e,*<Return>,=?>,=<?,=*/
 
 setlocal autoindent shiftwidth=4 tabstop=4 softtabstop=4 expandtab
 
@@ -20,12 +24,6 @@ if exists("*GetOocIndent")
 endif
 
 " determine comment state
-" return values are:
-" 0 - not in a comment
-" 1 - in single-line comment
-" 2 - in multi-line comment start
-" 3 - in multi-line comment end
-" 4 - in multi-line comment middle
 function! CommentState(lnum)
   let line = getline(a:lnum)
 
@@ -92,9 +90,8 @@ function! GetStrippedLine(lnum)
 endfunction
 
 function! CountParens(line)
-  let line = a:line
-  let open = substitute(line, '[^(]', '', 'g')
-  let close = substitute(line, '[^)]', '', 'g')
+  let open = substitute(a:line, '[^(]', '', 'g')
+  let close = substitute(a:line, '[^)]', '', 'g')
   return strlen(open) - strlen(close)
 endfunction
 
@@ -105,25 +102,13 @@ function! BlockStart(startline)
   while lnum > 1 && bracecount > 0
     let lnum = lnum - 1
 
-    let line = getline(lnum)
+    let line = GetStrippedLine(lnum)
 
     if line =~ '}\s*$'
       let bracecount = bracecount + 1
     elseif line =~ '{\s*$'
       let bracecount = bracecount - 1
     endif
-  endwhile
-
-  return lnum
-endfunction
-
-function! MatchStart(startline)
-  let lnum = a:startline
-  while lnum > 1
-    if getline(lnum) =~ '^\s*match.*[{]\s*$'
-      break
-    endif
-    let lnum = lnum - 1
   endwhile
 
   return lnum
@@ -149,9 +134,9 @@ function! GetOocIndent()
   endif
 
   " Align case contents correctly
-  if prevline =~ '^\s*case.*[=>]\(\s\|[{]\)*$'
-    let ms = MatchStart(v:lnum)
-    let ind = indent(ms) + (&shiftwidth * 2)
+  if prevline =~ '^\s*case.*[=>]\s*$'
+    let bnum = BlockStart(v:lnum)
+    let ind = indent(bnum) + (&shiftwidth * 2)
   endif
 
   " If parenthesis are unbalanced, indent or dedent
@@ -173,18 +158,18 @@ function! GetOocIndent()
 
     if thisline =~ '^\s*[}]'
       " align match end with match begin
-      let ms = MatchStart(v:lnum)
-      let bs = BlockStart(v:lnum)
-      if ms == bs
-        let ind = indent(ms)
-      endif
+      let mnum = searchpair('{', '', '}', 'bW')
+      let ind = indent(mnum)
     endif
   endif
   
   " Align cases correctly
   if thisline =~ '^\s*case.*[=>]\(\s\|[{]\)*$'
-    let ms = MatchStart(v:lnum)
-    let ind = indent(ms) + &shiftwidth
+    let bnum = BlockStart(v:lnum)
+    echom "blockstart = " . bnum . ", line = " . getline(bnum)
+    if getline(bnum) =~ '^\s*match.*[{]\s*$'
+      let ind = indent(bnum) + &shiftwidth
+    endif
   endif
 
   let cs = CommentState(lnum)
