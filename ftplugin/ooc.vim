@@ -7,3 +7,6 @@ set errorformat+=%f:%l:%c\ warning\ %m
 
 " default build command
 set makeprg=rock\ -v
+
+" for vim-commentary
+set commentstring=\/\/\ %s
