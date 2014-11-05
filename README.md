@@ -1,5 +1,5 @@
 
-[![Build Status](https://travis-ci.org/nddrylliog/ooc.vim.png?branch=master)](https://travis-ci.org/nddrylliog/ooc.vim)
+[![Build Status](https://travis-ci.org/fasterthanlime/ooc.vim.png?branch=master)](https://travis-ci.org/fasterthanlime/ooc.vim)
 
 # ooc.vim
 
@@ -20,7 +20,7 @@ is the recommended way to get ooc.vim and keep it up-to-date.
 Add this to your `~/.vimrc`:
 
 ```viml
-Bundle 'nddrylliog/ooc.vim'
+Bundle 'fasterthanlime/ooc.vim'
 ```
 
 Then restart vim, run `:BundleInstall`, and you're set!
@@ -57,6 +57,6 @@ The valid values for `g:syntastic_sam_mode` are `syntax`, `check`, and `codegen`
 
 [vundle]: https://github.com/gmarik/vundle
 [syntastic]: https://github.com/scrooloose/syntastic
-[rock]: https://github.com/nddrylliog/rock
-[sam]: https://github.com/nddrylliog/sam
+[rock]: https://github.com/fasterthanlime/rock
+[sam]: https://github.com/fasterthanlime/sam
 
